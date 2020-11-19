@@ -62,25 +62,25 @@ function getManagerInfo() {
             type: "input",
             name: "name",
             message: "enter the engineer's NAME",
-            validate: validateInput,
+            
           },
           {
             type: "input",
             name: "id",
             message: "enter the engineer's ID NUMBER",
-            validate: validateNumber,
+            
           },
           {
             type: "input",
             name: "email",
             message: "enter the engineer's EMAIL ADDRESS",
-            validate: validateInput,
+            
           },
           {
             type: "input",
             name: "github",
             message: "enter the engineer's GITHUB USERNAME",
-            validate: validateInput,
+         
           },
           {
             type: "confirm",
@@ -106,25 +106,25 @@ function getManagerInfo() {
             type: "input",
             name: "name",
             message: "enter the intern's NAME",
-            validate: validateInput,
+            
           },
           {
             type: "input",
             name: "id",
             message: "enter the intern's ID NUMBER",
-            validate: validateNumber,
+            
           },
           {
             type: "input",
             name: "email",
             message: "enter the intern's EMAIL ADDRESS",
-            validate: validateInput,
+           
           },
           {
             type: "input",
             name: "school",
             message: "enter the intern's SCHOOL",
-            validate: validateInput,
+            
           },
           {
             type: "confirm",
@@ -143,6 +143,90 @@ function getManagerInfo() {
           },
         ]);
 }
+// ===============================================================================
+// FUNCTIONS:
+// ===============================================================================
+// create ENGINEER(s) based on user's answers to getEngineerInfo() prompt
+async function createEngineer() {
+    engineer = await getEngineerInfo();
+    employees.push(
+      new Engineer(engineer.name, engineer.id, engineer.email, engineer.github)
+    );
+  }
+  
+  // create INTERN(s) based on user's answers to getInternInfo() prompt
+  async function createIntern() {
+    intern = await getInternInfo();
+    employees.push(
+      new Intern(intern.name, intern.id, intern.email, intern.school)
+    );
+  }
+  
+  // function to compile all employee info and generate HTML page
+  async function generateHtmlPage() {
+    try {
+      // create MANAGER based on user's answers to getManagerInfo() prompt
+      manager = await getManagerInfo();
+      employees.push(
+        new Manager(manager.name, manager.id, manager.email, manager.officeNumber)
+      );
+  
+      // create a situation (executed with while-loop) for when to allow user to add more engineers/interns
+      let addMoreEmployees = true;
+      while (addMoreEmployees) {
+        // user adds manager, but no other employees
+        if (manager.addMore === false) {
+          addMoreEmployees = false;
+        }
+        // user also adds engineer(s)
+        if (
+          manager.newMember === "Engineer" ||
+          engineer.newMember === "Engineer" ||
+          intern.newMember === "Engineer"
+        ) {
+          intern.newMember = manager.newMember = engineer.newMember = "NONE";
+          await createEngineer();
+          // user stops adding employees
+          if (engineer.addMore === false) {
+            addMoreEmployees = false;
+          }
+        }
+        // user also adds intern(s)
+        if (
+          manager.newMember === "Intern" ||
+          engineer.newMember === "Intern" ||
+          intern.newMember === "Intern"
+        ) {
+          intern.newMember = manager.newMember = engineer.newMember = "NONE";
+          await createIntern();
+          // user stops adding employees
+          if (intern.addMore === false) {
+            addMoreEmployees = false;
+          }
+        }
+      }
+  
+      console.log("generated employees:", employees);
+  
+      // call the render function, passing in the employees array as an argument
+      const renderedTeam = render(employees);
+      // write file ("team.html" will be generated inside the 'output' directory)
+      await fs.writeFile(outputPath, renderedTeam, "utf8", (err) => {
+        if (err) throw err;
+        console.log(
+          "SUCCESS! Your team profiles have been generated.\nGo check the 'output' directory for the 'team.html' file."
+        );
+      });
+    } catch (err) {
+      console.log("ERROR!", err);
+    }
+  }
+  
+  // ===============================================================================
+  // CALL FUNCTION:
+  // ===============================================================================
+  generateHtmlPage();
+  
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
