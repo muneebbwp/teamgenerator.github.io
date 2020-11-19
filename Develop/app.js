@@ -10,10 +10,139 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+let employees = []; // array to hold the manager, engineer(s), and intern(s); will be passed into render() function
+let engineer = {}; // object to hold each created engineer
+let intern = {}; // object to hold each created intern
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
-
+function getManagerInfo() {
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "enter name of the manager",
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "enter id for the manager"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "enter email for the manager"
+        },
+        {
+            type: "input",
+            name: "officeNumber",
+            message: "enter office number for the manager"
+        },
+        {
+            type: "confirm",
+            name: "addMore",
+            message: "Are there any more team members to be added?",
+            default: true,
+          },
+          {
+            type: "list",
+            name: "newMember",
+            message: "Which type of team member do you want to add?",
+            choices: ["Engineer", "Intern"],
+            when: function (answers) {
+              return answers.addMore;
+            },
+          },
+        ]);
+      }
+      
+      function getEngineerInfo() {
+        return inquirer.prompt([
+          {
+            type: "input",
+            name: "name",
+            message: "enter the engineer's NAME",
+            validate: validateInput,
+          },
+          {
+            type: "input",
+            name: "id",
+            message: "enter the engineer's ID NUMBER",
+            validate: validateNumber,
+          },
+          {
+            type: "input",
+            name: "email",
+            message: "enter the engineer's EMAIL ADDRESS",
+            validate: validateInput,
+          },
+          {
+            type: "input",
+            name: "github",
+            message: "enter the engineer's GITHUB USERNAME",
+            validate: validateInput,
+          },
+          {
+            type: "confirm",
+            name: "addMore",
+            message: "Are there any more team members to be added?",
+            default: true,
+          },
+          {
+            type: "list",
+            name: "newMember",
+            message: "Which type of team member do you want to add?",
+            choices: ["Engineer", "Intern"],
+            when: function (answers) {
+              return answers.addMore;
+            },
+          },
+        ]);
+      }
+      
+      function getInternInfo() {
+        return inquirer.prompt([
+          {
+            type: "input",
+            name: "name",
+            message: "enter the intern's NAME",
+            validate: validateInput,
+          },
+          {
+            type: "input",
+            name: "id",
+            message: "enter the intern's ID NUMBER",
+            validate: validateNumber,
+          },
+          {
+            type: "input",
+            name: "email",
+            message: "enter the intern's EMAIL ADDRESS",
+            validate: validateInput,
+          },
+          {
+            type: "input",
+            name: "school",
+            message: "enter the intern's SCHOOL",
+            validate: validateInput,
+          },
+          {
+            type: "confirm",
+            name: "addMore",
+            message: "Are there any more team members to be added?",
+            default: true,
+          },
+          {
+            type: "list",
+            name: "newMember",
+            message: "Which type of team member do you want to add?",
+            choices: ["Engineer", "Intern"],
+            when: function (answers) {
+              return answers.addMore;
+            },
+          },
+        ]);
+}
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
